@@ -1,0 +1,41 @@
+#!/bin/bash
+
+# === clip: حافظة نصوص سريعة ===
+
+CLIP_FILE="$HOME/.clipboard_store"
+
+if [ ! -f "$CLIP_FILE" ]; then
+    touch "$CLIP_FILE"
+fi
+
+case "$1" in
+    save)
+        if [ -z "$2" ]; then
+            echo "الاستخدام: clip save <النص>"
+            exit 1
+        fi
+        echo "$2" >> "$CLIP_FILE"
+        echo "✅ تم الحفظ برقم $(cat $CLIP_FILE | wc -l)"
+        ;;
+    list)
+        cat -n "$CLIP_FILE"
+        ;;
+    get)
+        if [ -z "$2" ]; then
+            echo "الاستخدام: clip get <رقم السطر>"
+            exit 1
+        fi
+        sed -n "${2}p" "$CLIP_FILE"
+        ;;
+    del)
+        if [ -z "$2" ]; then
+            echo "الاستخدام: clip del <رقم السطر>"
+            exit 1
+        fi
+        sed -i "${2}d" "$CLIP_FILE"
+        echo "✅ تم الحذف"
+        ;;
+    *)
+        echo "الاستخدام: clip {save|list|get|del} [النص/الرقم]"
+        ;;
+esac
