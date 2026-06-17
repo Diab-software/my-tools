@@ -1,0 +1,6 @@
+#!/bin/bash
+[ -z "$1" ] && echo "خطأ: حدد اسم الأداة" && exit 1
+cp $HOME/my_framework/templates/tool_template.sh $HOME/my_framework/bin/$1
+sed -i "s/TOOL_NAME_PLACEHOLDER/$1/g" $HOME/my_framework/bin/$1
+chmod +x $HOME/my_framework/bin/$1
+echo "[✔] أداة $1 أنشئت. شغلها بـ: $1"

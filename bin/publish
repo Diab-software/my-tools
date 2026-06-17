@@ -1,0 +1,6 @@
+#!/bin/bash
+cd $HOME/my_framework
+git add .
+git commit -m "تحديث: $(date)"
+git push origin main
+echo "[✔] تم الرفع إلى GitHub"

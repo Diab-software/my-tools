@@ -1,0 +1,10 @@
+#!/bin/bash
+FRAMEWORK_HOME="$HOME/my_framework"
+source "$FRAMEWORK_HOME/lib/colors.sh" 2>/dev/null
+case "$1" in
+    list|ls) ls -1 $FRAMEWORK_HOME/bin | grep -v "loader\|updater\|new-tool\|publish" ;;
+    update) $FRAMEWORK_HOME/bin/updater ;;
+    new) $FRAMEWORK_HOME/bin/new-tool "$2" ;;
+    publish) $FRAMEWORK_HOME/bin/publish ;;
+    *) echo "استخدام: mytool {list|update|new|publish}" ;;
+esac

@@ -1,0 +1,5 @@
+#!/bin/bash
+cd $HOME/my_framework
+git pull origin main
+./install.sh
+echo "[✔] تم التحديث"
