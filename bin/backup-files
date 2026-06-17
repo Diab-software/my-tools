@@ -1,0 +1,20 @@
+#!/bin/bash
+# === backup-files: ضغط مجلد مع إضافة التاريخ ===
+
+if [ -z "$1" ]; then
+    echo "الاستخدام: backup-files <المجلد>"
+    exit 1
+fi
+
+FOLDER=$1
+if [ ! -d "$FOLDER" ]; then
+    echo "✖ المجلد غير موجود: $FOLDER"
+    exit 1
+fi
+
+DATE=$(date +%Y-%m-%d_%H-%M)
+BACKUP_NAME="backup_$(basename $FOLDER)_$DATE.tar.gz"
+
+tar -czf "$BACKUP_NAME" "$FOLDER"
+echo "✅ تم إنشاء النسخة: $BACKUP_NAME"
+du -sh "$BACKUP_NAME"

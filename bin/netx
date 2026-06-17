@@ -1,0 +1,29 @@
+#!/bin/bash
+
+# === netx: كشف الأجهزة باستخدام arp-scan (بدون صلاحيات) ===
+
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+BLUE='\033[0;34m'
+CYAN='\033[0;36m'
+NC='\033[0m'
+
+echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+echo -e "${YELLOW}📡 جارٍ مسح الشبكة باستخدام arp-scan...${NC}"
+echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+
+# تنفيذ arp-scan
+arp-scan --localnet 2>/dev/null | while read line; do
+    # نبحث عن الأسطر التي تحتوي على IP (تبدأ برقم)
+    if echo "$line" | grep -qE '^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+'; then
+        ip=$(echo "$line" | awk '{print $1}')
+        mac=$(echo "$line" | awk '{print $2}')
+        host=$(echo "$line" | awk '{print $3}')
+        if [ -z "$host" ]; then host="جهاز غير معروف"; fi
+        echo -e "${GREEN}✔${NC} IP: ${BLUE}$ip${NC}  MAC: ${CYAN}$mac${NC}  ($host)"
+    fi
+done
+
+echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+echo -e "${GREEN}✅ انتهى المسح!${NC}"
