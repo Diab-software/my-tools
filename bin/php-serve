@@ -1,0 +1,11 @@
+#!/bin/bash
+# === php-serve: تشغيل خادم PHP ===
+
+PORT=${1:-8000}
+DIR=${2:-.}
+
+echo "🐘 خادم PHP شغال على: http://localhost:$PORT"
+echo "📂 المجلد: $(realpath $DIR)"
+echo "⚠️ اضغط Ctrl+C للإيقاف"
+
+php -S localhost:$PORT -t "$DIR"

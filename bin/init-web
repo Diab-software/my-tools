@@ -1,0 +1,61 @@
+#!/bin/bash
+# === init-web: إنشاء هيكل مشروع ويب ===
+
+if [ -z "$1" ]; then
+    echo "الاستخدام: init-web <اسم_المشروع> [php|static]"
+    echo "مثال: init-web my_site static"
+    echo "مثال: init-web my_api php"
+    exit 1
+fi
+
+PROJECT=$1
+TYPE=${2:-static}
+mkdir -p "$PROJECT" && cd "$PROJECT"
+
+case $TYPE in
+    static)
+        echo "📄 مشروع ويب ثابت (HTML/CSS/JS)"
+        mkdir -p assets/{css,js,images}
+        cat > index.html << 'HTML'
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>مرحباً</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+    <h1>🚀 مشروعي الجديد</h1>
+    <script src="assets/js/app.js"></script>
+</body>
+</html>
+HTML
+        echo "body { font-family: Arial; background: #f4f4f4; text-align: center; padding: 50px; }" > assets/css/style.css
+        echo "console.log('مرحباً من المشروع!');" > assets/js/app.js
+        ;;
+    php)
+        echo "🐘 مشروع PHP"
+        mkdir -p includes assets/{css,js}
+        cat > index.php << 'PHP'
+<?php
+echo "<h1>مرحباً من PHP!</h1>";
+phpinfo();
+?>
+PHP
+        cat > includes/config.php << 'CONF'
+<?php
+define('DB_HOST', 'localhost');
+define('DB_NAME', 'my_db');
+define('DB_USER', 'root');
+define('DB_PASS', '');
+?>
+CONF
+        ;;
+    *)
+        echo "✖ نوع غير معروف: $TYPE (استخدم static أو php)"
+        exit 1
+        ;;
+esac
+
+echo "✅ تم إنشاء مشروع الويب في: $(pwd)"

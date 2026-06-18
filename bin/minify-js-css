@@ -1,0 +1,48 @@
+#!/bin/bash
+# === minify-js-css: ضغط ملفات JS و CSS ===
+
+if [ -z "$1" ]; then
+    echo "الاستخدام: minify-js-css <ملف.js|ملف.css>"
+    echo "مثال: minify-js-css script.js"
+    echo "مثال: minify-js-css style.css"
+    exit 1
+fi
+
+FILE=$1
+if [ ! -f "$FILE" ]; then
+    echo "✖ الملف غير موجود: $FILE"
+    exit 1
+fi
+
+EXT="${FILE##*.}"
+OUTPUT="${FILE%.*}.min.${EXT}"
+
+case $EXT in
+    js)
+        echo "📦 ضغط JavaScript..."
+        # استخدام أداة ضغط عبر الإنترنت (بدون تثبيت إضافي)
+        curl -s -X POST https://javascript-minifier.com/raw \
+            -H "Content-Type: application/x-www-form-urlencoded" \
+            -d "input=$(cat $FILE | sed 's/"/\\"/g' | sed ':a;N;$!ba;s/\n/\\n/g')" > "$OUTPUT"
+        ;;
+    css)
+        echo "🎨 ضغط CSS..."
+        curl -s -X POST https://cssminifier.com/raw \
+            -H "Content-Type: application/x-www-form-urlencoded" \
+            -d "input=$(cat $FILE | sed 's/"/\\"/g' | sed ':a;N;$!ba;s/\n/\\n/g')" > "$OUTPUT"
+        ;;
+    *)
+        echo "✖ امتداد غير مدعوم: $EXT (استخدم js أو css)"
+        exit 1
+        ;;
+esac
+
+if [ -s "$OUTPUT" ]; then
+    SIZE_OLD=$(du -h "$FILE" | cut -f1)
+    SIZE_NEW=$(du -h "$OUTPUT" | cut -f1)
+    echo "✅ تم الضغط: $OUTPUT"
+    echo "   الحجم القديم: $SIZE_OLD → الجديد: $SIZE_NEW"
+else
+    echo "✖ فشل الضغط، تأكد من الملف"
+    rm -f "$OUTPUT"
+fi
