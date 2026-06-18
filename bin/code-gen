@@ -1,0 +1,31 @@
+#!/bin/bash
+# === code-gen: توليد أكواد جاهزة ===
+
+if [ -z "$1" ]; then
+    echo "الاستخدام: code-gen <template> [اسم_الدالة]"
+    echo "القوالب المتوفرة: json-read, try-except, api-get, class"
+    echo "مثال: code-gen json-read load_json"
+    exit 1
+fi
+
+TEMPLATE=$1
+FUNC_NAME=${2:-my_function}
+
+case $TEMPLATE in
+    json-read)
+        printf 'import json\n\ndef %s(file_path):\n    with open(file_path, "r") as f:\n        return json.load(f)\n' "$FUNC_NAME"
+        ;;
+    try-except)
+        printf 'try:\n    # الكود الذي قد يسبب خطأ\n    pass\nexcept Exception as e:\n    print(f"خطأ: {e}")\n'
+        ;;
+    api-get)
+        printf 'import requests\n\ndef %s(url):\n    response = requests.get(url)\n    if response.status_code == 200:\n        return response.json()\n    return None\n' "$FUNC_NAME"
+        ;;
+    class)
+        CLASS_NAME=$(echo "$FUNC_NAME" | sed 's/.*/\u&/')
+        printf 'class %s:\n    def __init__(self):\n        pass\n    \n    def run(self):\n        print("Hello from %s")\n' "$CLASS_NAME" "$CLASS_NAME"
+        ;;
+    *)
+        echo "✖ قالب غير معروف: $TEMPLATE"
+        ;;
+esac

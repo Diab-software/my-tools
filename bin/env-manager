@@ -1,0 +1,38 @@
+#!/bin/bash
+# === env-manager: التعامل مع ملفات .env ===
+
+ENV_FILE=".env"
+
+if [ ! -f "$ENV_FILE" ]; then
+    echo "⚠️ ملف .env غير موجود. سيتم إنشاؤه."
+    touch "$ENV_FILE"
+fi
+
+case "$1" in
+    get)
+        if [ -z "$2" ]; then
+            echo "الاستخدام: env-manager get <KEY>"
+            exit 1
+        fi
+        grep "^$2=" "$ENV_FILE" | cut -d'=' -f2- | sed 's/^"//;s/"$//' || echo "✖ المفتاح غير موجود"
+        ;;
+    set)
+        if [ -z "$2" ] || [ -z "$3" ]; then
+            echo "الاستخدام: env-manager set <KEY> <VALUE>"
+            exit 1
+        fi
+        if grep -q "^$2=" "$ENV_FILE"; then
+            sed -i "s/^$2=.*/$2=\"$3\"/" "$ENV_FILE"
+        else
+            echo "$2=\"$3\"" >> "$ENV_FILE"
+        fi
+        echo "✅ تم تعيين $2"
+        ;;
+    list)
+        echo "📋 المحتويات الحالية:"
+        cat -n "$ENV_FILE"
+        ;;
+    *)
+        echo "الاستخدام: env-manager {get|set|list} [KEY] [VALUE]"
+        ;;
+esac

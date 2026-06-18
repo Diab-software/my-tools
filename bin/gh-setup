@@ -1,0 +1,41 @@
+#!/bin/bash
+# === gh-setup: استنساخ وإعداد مستودع GitHub ===
+
+if [ -z "$1" ]; then
+    echo "الاستخدام: gh-setup <رابط_المستودع>"
+    echo "مثال: gh-setup https://github.com/Diab-software/my-tools.git"
+    exit 1
+fi
+
+REPO_URL=$1
+REPO_NAME=$(basename "$REPO_URL" .git)
+
+echo "📥 استنساخ المستودع: $REPO_NAME"
+git clone "$REPO_URL"
+
+if [ $? -ne 0 ]; then
+    echo "✖ فشل الاستنساخ"
+    exit 1
+fi
+
+cd "$REPO_NAME" || exit
+
+# إذا كان ملف requirements.txt موجود
+if [ -f "requirements.txt" ]; then
+    echo "🐍 تثبيت تبعيات Python..."
+    pip install -r requirements.txt --quiet
+fi
+
+# إذا كان package.json موجود
+if [ -f "package.json" ]; then
+    echo "📦 تثبيت تبعيات Node.js..."
+    npm install --quiet
+fi
+
+# إنشاء ملف .env فارغ إذا لم يكن موجوداً
+if [ ! -f ".env" ]; then
+    touch .env
+    echo "✅ تم إنشاء .env فارغ"
+fi
+
+echo "✅ تم تجهيز المستودع: $(pwd)"

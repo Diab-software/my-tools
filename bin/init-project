@@ -1,0 +1,56 @@
+#!/bin/bash
+# === init-project: إنشاء هيكل مشروع جديد ===
+
+if [ -z "$1" ] || [ -z "$2" ]; then
+    echo "الاستخدام: init-project <اسم_المشروع> <python|bash|node>"
+    echo "مثال: init-project my_app python"
+    exit 1
+fi
+
+PROJECT=$1
+LANG=$2
+mkdir -p "$PROJECT" && cd "$PROJECT"
+
+case $LANG in
+    python)
+        echo "🐍 مشروع Python: $PROJECT"
+        cat > main.py << 'PY'
+def main():
+    print("Hello from $PROJECT!")
+if __name__ == "__main__":
+    main()
+PY
+        cat > requirements.txt <<< "# dependencies"
+        cat > README.md <<< "# $PROJECT\n\nوصف المشروع"
+        mkdir -p tests
+        touch tests/test_main.py
+        git init
+        echo "__pycache__/\n*.pyc\n.env" > .gitignore
+        ;;
+    bash)
+        echo "📁 مشروع Bash: $PROJECT"
+        cat > run.sh << 'SH'
+#!/bin/bash
+echo "Hello from $PROJECT!"
+SH
+        chmod +x run.sh
+        cat > README.md <<< "# $PROJECT"
+        mkdir -p lib
+        git init
+        ;;
+    node)
+        echo "📦 مشروع Node.js: $PROJECT"
+        npm init -y > /dev/null 2>&1
+        cat > index.js << 'JS'
+console.log("Hello from $PROJECT!");
+JS
+        mkdir -p src tests
+        git init
+        ;;
+    *)
+        echo "✖ لغة غير مدعومة: $LANG"
+        exit 1
+        ;;
+esac
+
+echo "✅ تم إنشاء المشروع في: $(pwd)"

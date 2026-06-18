@@ -1,0 +1,29 @@
+#!/bin/bash
+# === api-tester: اختبار APIs ===
+
+if [ -z "$1" ]; then
+    echo "الاستخدام: api-tester <GET|POST> <URL> [بيانات]"
+    echo "مثال: api-tester GET https://api.github.com/users/octocat"
+    echo "مثال: api-tester POST https://httpbin.org/post '{\"key\":\"value\"}'"
+    exit 1
+fi
+
+METHOD=$1
+URL=$2
+DATA=$3
+
+case $METHOD in
+    GET)
+        curl -s -X GET "$URL" | jq . 2>/dev/null || echo "⚠️ استجابة غير JSON"
+        ;;
+    POST)
+        if [ -z "$DATA" ]; then
+            echo "✖ POST يحتاج بيانات"
+            exit 1
+        fi
+        curl -s -X POST "$URL" -H "Content-Type: application/json" -d "$DATA" | jq . 2>/dev/null
+        ;;
+    *)
+        echo "✖ الطريقة غير مدعومة: $METHOD (استخدم GET أو POST)"
+        ;;
+esac

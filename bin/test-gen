@@ -1,0 +1,54 @@
+#!/bin/bash
+# === test-gen: توليد قوالب اختبارات (نسخة مصححة) ===
+
+if [ -z "$1" ] || [ -z "$2" ]; then
+    echo "الاستخدام: test-gen <python|bash> <اسم_الدالة>"
+    echo "مثال: test-gen python calculate_sum"
+    exit 1
+fi
+
+LANG=$1
+FUNC=$2
+OUTPUT="test_${FUNC}.${LANG}"
+
+# تصحيح لغة Python: نضع .py بدلاً من .python
+if [ "$LANG" == "python" ]; then
+    OUTPUT="test_${FUNC}.py"
+fi
+
+case $LANG in
+    python)
+        cat > "$OUTPUT" << PY
+import unittest
+
+class Test${FUNC^}(unittest.TestCase):
+    def test_${FUNC}_basic(self):
+        # استدعِ الدالة من الملف المناسب
+        # مثال: from utils import $FUNC
+        self.assertTrue(True)  # استبدل باختبار حقيقي
+
+if __name__ == "__main__":
+    unittest.main()
+PY
+        ;;
+    bash)
+        cat > "$OUTPUT" << SH
+#!/bin/bash
+source ./${FUNC}.sh 2>/dev/null || echo "⚠️ تأكد من وجود الملف المصدر"
+
+test_$FUNC() {
+    echo "اختبار $FUNC..."
+    # مثال: if [ \$($FUNC "input") == "expected" ]; then echo "✅ نجح"; else echo "❌ فشل"; fi
+}
+
+test_$FUNC
+SH
+        chmod +x "$OUTPUT"
+        ;;
+    *)
+        echo "✖ لغة غير مدعومة: $LANG"
+        exit 1
+        ;;
+esac
+
+echo "✅ تم إنشاء: $OUTPUT"

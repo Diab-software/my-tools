@@ -1,0 +1,11 @@
+my-tools/
+my_api/
+my_flask_api/
+*.tar.gz
+*.db
+test_*.bash
+test_*.python
+.env
+archive_*.tar.gz
+my-backup.tar.gz
+venv/

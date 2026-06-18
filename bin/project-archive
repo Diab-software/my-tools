@@ -1,0 +1,33 @@
+#!/bin/bash
+# === project-archive: ضغط المشروع مع استثناءات ===
+
+if [ -z "$1" ]; then
+    echo "الاستخدام: project-archive <المجلد> [اسم_الملف]"
+    echo "مثال: project-archive ./my_project"
+    exit 1
+fi
+
+PROJECT=$1
+OUTPUT=${2:-"archive_$(basename $PROJECT)_$(date +%Y%m%d).tar.gz"}
+
+if [ ! -d "$PROJECT" ]; then
+    echo "✖ المجلد غير موجود: $PROJECT"
+    exit 1
+fi
+
+EXCLUDES=("node_modules" "__pycache__" ".git" "*.pyc" ".env" "venv" "dist" "build")
+
+EXCLUDE_ARGS=""
+for pattern in "${EXCLUDES[@]}"; do
+    EXCLUDE_ARGS="$EXCLUDE_ARGS --exclude=$pattern"
+done
+
+echo "📦 ضغط $PROJECT → $OUTPUT"
+tar -czf "$OUTPUT" $EXCLUDE_ARGS -C "$(dirname "$PROJECT")" "$(basename "$PROJECT")"
+
+if [ $? -eq 0 ]; then
+    echo "✅ تم الضغط: $OUTPUT"
+    du -sh "$OUTPUT"
+else
+    echo "✖ فشل الضغط"
+fi

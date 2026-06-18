@@ -1,0 +1,21 @@
+#!/bin/bash
+# === watch-files: مراقبة التغييرات وتنفيذ أمر ===
+
+if [ -z "$1" ] || [ -z "$2" ]; then
+    echo "الاستخدام: watch-files <مجلد> <أمر>"
+    echo "مثال: watch-files ./src 'python main.py'"
+    exit 1
+fi
+
+DIR=$1
+CMD=$2
+echo "🔍 مراقبة التغييرات في: $DIR"
+echo "▶️  ينفذ: $CMD"
+echo "⚠️ Ctrl+C للإيقاف"
+
+while true; do
+    inotifywait -r -e modify,create,delete "$DIR" > /dev/null 2>&1
+    clear
+    echo "🔄 تغيير تم اكتشافه → تنفيذ الأمر..."
+    eval "$CMD"
+done
