@@ -1,0 +1,27 @@
+#!/bin/bash
+# === cleaner: تنظيف الملفات الفارغة والمؤقتة ===
+
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+NC='\033[0m'
+
+TARGET=${1:-.}  # المجلد الحالي إذا لم يحدد
+
+echo -e "${YELLOW}🧹 فحص المجلد: $TARGET${NC}"
+
+# 1. الملفات الفارغة (0 بايت)
+EMPTY=$(find "$TARGET" -type f -empty 2>/dev/null | wc -l)
+if [ $EMPTY -gt 0 ]; then
+    echo -e "  📄 ملفات فارغة: $EMPTY"
+    find "$TARGET" -type f -empty -delete 2>/dev/null
+fi
+
+# 2. ملفات الكاش المؤقتة (.tmp, .log, .cache)
+CACHE=$(find "$TARGET" -type f \( -name "*.tmp" -o -name "*.log" -o -name "*.cache" \) 2>/dev/null | wc -l)
+if [ $CACHE -gt 0 ]; then
+    echo -e "  🗑️ ملفات كاش: $CACHE"
+    find "$TARGET" -type f \( -name "*.tmp" -o -name "*.log" -o -name "*.cache" \) -delete 2>/dev/null
+fi
+
+echo -e "${GREEN}✅ تم التنظيف! حذف $((EMPTY + CACHE)) ملفاً.${NC}"

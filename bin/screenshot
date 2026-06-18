@@ -1,0 +1,16 @@
+#!/bin/bash
+# === screenshot: تصوير شاشة الهاتف ===
+
+DATE=$(date +%Y-%m-%d_%H-%M-%S)
+FILE="$HOME/storage/pictures/screenshot_$DATE.png"
+
+echo "📸 جارٍ التقاط الشاشة..."
+termux-screenshot "$FILE"
+
+if [ -f "$FILE" ]; then
+    echo "✅ تم الحفظ في: $FILE"
+    echo "   (يمكنك فتحها من مجلد الصور في الهاتف)"
+else
+    echo "✖ فشل الالتقاط. تأكد من صلاحيات التخزين."
+    echo "   نفّذ: termux-setup-storage"
+fi

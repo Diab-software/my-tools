@@ -1,0 +1,44 @@
+#!/bin/bash
+
+# === speedtest: قياس سرعة التحميل وزمن الاستجابة ===
+
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+BLUE='\033[0;34m'
+NC='\033[0m'
+
+echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+echo -e "${YELLOW}📡 جارٍ قياس سرعة الإنترنت...${NC}"
+echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+
+# 1. قياس زمن الاستجابة (ping) لـ Google
+PING_MS=$(ping -c 3 8.8.8.8 2>/dev/null | tail -1 | awk -F '/' '{print $5}')
+if [ -z "$PING_MS" ]; then
+    PING_MS="غير متاح"
+else
+    PING_MS=$(printf "%.0f" "$PING_MS")
+fi
+
+# 2. قياس سرعة التحميل (تنزيل 10 ميجابايت من سيرفر سريع)
+FILE_URL="http://speedtest.tele2.net/10MB.zip"
+START=$(date +%s%N)
+curl -s -o /tmp/speedtest.tmp "$FILE_URL" 2>/dev/null
+END=$(date +%s%N)
+DURATION=$(( ($END - $START) / 1000000000 ))
+
+if [ $DURATION -gt 0 ]; then
+    SPEED=$(( 10 / $DURATION ))  # 10 MB / الزمن بالثواني = ميجابايت/ثانية
+    SPEED_MBPS=$(( SPEED * 8 ))  # تحويل إلى ميغابت/ثانية
+    echo -e "${GREEN}📥 سرعة التحميل: ~${SPEED_MBPS} Mbps${NC}"
+else
+    echo -e "${RED}✖ فشل قياس السرعة.${NC}"
+    SPEED_MBPS="غير متاح"
+fi
+
+# تنظيف الملف المؤقت
+rm -f /tmp/speedtest.tmp
+
+# عرض النتائج
+echo -e "${GREEN}⏱️  زمن الاستجابة (Ping): ${PING_MS} ms${NC}"
+echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"

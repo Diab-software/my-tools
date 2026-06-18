@@ -1,0 +1,13 @@
+#!/bin/bash
+# === translate: ترجمة نصوص (إنجليزي ←→ عربي) ===
+
+if [ -z "$1" ]; then
+    echo "الاستخدام: translate <النص>"
+    echo "مثال: translate hello world"
+    exit 1
+fi
+
+TEXT=$(echo "$*" | sed 's/ /%20/g')
+API="https://api.mymemory.translated.net/get?q=$TEXT&langpair=en|ar"
+
+curl -s "$API" | jq -r '.responseData.translatedText' 2>/dev/null || echo "⚠️ فشل الترجمة، تأكد من اتصالك."
