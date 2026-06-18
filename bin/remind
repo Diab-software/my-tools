@@ -1,0 +1,17 @@
+#!/bin/bash
+# === remind: تذكير مع إشعار ===
+
+if [ -z "$1" ] || [ -z "$2" ]; then
+    echo "الاستخدام: remind <الوقت> <الرسالة>"
+    echo "مثال: remind 5 'موعد الاجتماع'"
+    echo "   (يذكرك بعد 5 دقائق)"
+    exit 1
+fi
+
+TIME=$1
+MESSAGE=$2
+
+echo "⏳ سيتم التذكير بعد $TIME دقيقة (${MESSAGE})"
+sleep $((TIME * 60))
+termux-notification --title "تذكير" --content "$MESSAGE" --sound --vibrate
+echo "🔔 تم الإشعار!"

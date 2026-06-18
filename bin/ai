@@ -1,0 +1,11 @@
+#!/bin/bash
+# === ai: استعلام ذكاء اصطناعي (مجاني) ===
+
+if [ -z "$1" ]; then
+    echo "الاستخدام: ai <سؤالك>"
+    echo "مثال: ai ما هي عاصمة مصر؟"
+    exit 1
+fi
+
+QUESTION=$(echo "$*" | sed 's/ /%20/g')
+curl -s "https://api.duckduckgo.com/?q=$QUESTION&format=json&no_html=1&skip_disambig=1" | jq -r '.AbstractText // .Answer // "⚠️ ما لقيت إجابة."'

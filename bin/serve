@@ -1,0 +1,10 @@
+#!/bin/bash
+# === serve: سيرفر مشاركة ملفات فوري ===
+
+PORT=${1:-8080}
+DIR=${2:-.}
+
+echo "🌐 السيرفر شغال على: http://$(ifconfig wlan0 2>/dev/null | grep 'inet ' | awk '{print $2}'):$PORT"
+echo "📂 المجلد: $(realpath $DIR)"
+echo "⚠️ اضغط Ctrl+C للإيقاف"
+python3 -m http.server $PORT --directory "$DIR"

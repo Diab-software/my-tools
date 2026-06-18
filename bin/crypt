@@ -1,0 +1,31 @@
+#!/bin/bash
+# === crypt: تشفير/فك تشفير الملفات ===
+
+if [ -z "$1" ] || [ -z "$2" ]; then
+    echo "الاستخدام:"
+    echo "  crypt encrypt <ملف>  ← تشفير"
+    echo "  crypt decrypt <ملف>  ← فك التشفير"
+    exit 1
+fi
+
+MODE=$1
+FILE=$2
+
+if [ ! -f "$FILE" ]; then
+    echo "✖ الملف غير موجود: $FILE"
+    exit 1
+fi
+
+case $MODE in
+    encrypt)
+        openssl enc -aes-256-cbc -salt -in "$FILE" -out "${FILE}.enc"
+        echo "✅ تم التشفير: ${FILE}.enc"
+        ;;
+    decrypt)
+        openssl enc -aes-256-cbc -d -in "$FILE" -out "${FILE%.enc}"
+        echo "✅ تم فك التشفير: ${FILE%.enc}"
+        ;;
+    *)
+        echo "✖ خيار غير معروف: $MODE (استخدم encrypt أو decrypt)"
+        ;;
+esac

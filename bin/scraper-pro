@@ -1,0 +1,36 @@
+#!/bin/bash
+# === scraper-pro: سكرابر احترافي ===
+
+if [ -z "$1" ]; then
+    echo "الاستخدام: scraper-pro <URL> [--links]"
+    echo "مثال: scraper-pro https://example.com"
+    echo "مثال: scraper-pro https://example.com --links"
+    exit 1
+fi
+
+python3 -c "
+import requests
+from bs4 import BeautifulSoup
+import sys
+
+url = sys.argv[1]
+mode = sys.argv[2] if len(sys.argv) > 2 else 'titles'
+
+try:
+    r = requests.get(url, timeout=15, headers={'User-Agent': 'Mozilla/5.0'})
+    soup = BeautifulSoup(r.text, 'html.parser')
+    
+    if mode == '--links':
+        print('📎 الروابط:')
+        for a in soup.find_all('a', href=True)[:20]:
+            print(f'  • {a[\"href\"]}')
+    else:
+        print('📰 العناوين الرئيسية:')
+        for tag in ['h1', 'h2', 'h3']:
+            for el in soup.find_all(tag):
+                txt = el.get_text(strip=True)
+                if txt:
+                    print(f'  • {txt[:100]}')
+except Exception as e:
+    print(f'⚠️ فشل: {e}')
+" "$1" "$2"

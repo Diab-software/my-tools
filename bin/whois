@@ -1,0 +1,10 @@
+#!/bin/bash
+# === whois: معلومات النطاق ===
+
+if [ -z "$1" ]; then
+    echo "الاستخدام: whois <النطاق>"
+    echo "مثال: whois google.com"
+    exit 1
+fi
+
+whois "$1" | grep -E "Domain Name|Registry|Creation Date|Expiry Date|Name Server|Registrar" | head -15
