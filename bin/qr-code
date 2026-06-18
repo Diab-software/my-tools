@@ -1,0 +1,32 @@
+#!/bin/bash
+
+# === qr-code: توليد كود QR باستخدام بايثون ===
+
+if [ -z "$1" ]; then
+    echo "الاستخدام: qr-code <النص أو الرابط>"
+    echo "مثال: qr-code https://github.com/Diab-software"
+    exit 1
+fi
+
+TEXT="$1"
+
+python3 -c "
+import qrcode
+import sys
+from PIL import Image
+
+data = sys.argv[1]
+qr = qrcode.QRCode(box_size=2, border=1)
+qr.add_data(data)
+qr.make(fit=True)
+img = qr.make_image(fill='black', back_color='white')
+img.save('qr_code.png')
+print('✅ تم توليد الكود وحفظه كـ: qr_code.png')
+" "$TEXT"
+
+# عرض الكود في الطرفية (نصياً) باستخدام convert أو إظهار المسار
+if command -v display &>/dev/null; then
+    display qr_code.png
+else
+    echo "📱 يمكنك فتح الصورة: qr_code.png (في مجلد العمل)"
+fi

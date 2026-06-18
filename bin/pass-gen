@@ -1,0 +1,24 @@
+#!/bin/bash
+
+# === pass-gen: مولد كلمات سر قوية ===
+
+LENGTH=${1:-16}  # الطول الافتراضي 16 حرف
+
+if [[ $LENGTH -lt 8 ]]; then
+    echo "⚠️ الطول قصير جداً (اقل من 8). سيتم ضبطه إلى 8."
+    LENGTH=8
+fi
+
+# توليد كلمة سر تحتوي على أحرف كبيرة/صغيرة/أرقام/رموز
+PASSWORD=$(openssl rand -base64 32 | tr -dc 'A-Za-z0-9!@#$%^&*()_+-=' | head -c $LENGTH)
+
+echo "🔑 كلمة السر الجديدة (طول $LENGTH):"
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo "$PASSWORD"
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+
+# نسخ للحافظة (إذا كان termux-clipboard-set متاح)
+if command -v termux-clipboard-set &>/dev/null; then
+    echo "$PASSWORD" | termux-clipboard-set
+    echo "✅ تم نسخها تلقائياً إلى الحافظة!"
+fi

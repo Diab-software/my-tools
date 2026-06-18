@@ -1,0 +1,44 @@
+#!/bin/bash
+
+# === site-monitor: مراقبة تغير المواقع ===
+
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+NC='\033[0m'
+
+if [ -z "$1" ]; then
+    echo -e "${YELLOW}الاستخدام: site-monitor <URL>${NC}"
+    echo "مثال: site-monitor https://example.com"
+    exit 1
+fi
+
+URL="$1"
+HASH_FILE="$HOME/.site_monitor_$(echo $URL | md5sum | cut -d' ' -f1)"
+
+# جلب المحتوى الحالي
+CURRENT=$(curl -s -L "$URL" | md5sum | cut -d' ' -f1)
+
+if [ ! -f "$HASH_FILE" ]; then
+    # أول تشغيل: نحفظ الهاش
+    echo "$CURRENT" > "$HASH_FILE"
+    echo -e "${GREEN}✅ تم حفظ الحالة الحالية للموقع.${NC}"
+    echo "   سيراقب الموقع في المرات القادمة."
+else
+    PREVIOUS=$(cat "$HASH_FILE")
+    if [ "$CURRENT" != "$PREVIOUS" ]; then
+        echo -e "${RED}🔔 تنبيه: الموقع تغير!${NC}"
+        echo "   الرابط: $URL"
+        echo "   الهاش القديم: $PREVIOUS"
+        echo "   الهاش الجديد: $CURRENT"
+        # تحديث الهاش
+        echo "$CURRENT" > "$HASH_FILE"
+        
+        # (اختياري) إرسال إشعار عبر التيليجرام إذا كانت الأداة موجودة
+        if command -v telegram-sender &>/dev/null; then
+            telegram-sender "🔔 تغير موقع: $URL"
+        fi
+    else
+        echo -e "${GREEN}✅ لا تغيير في الموقع.${NC}"
+    fi
+fi

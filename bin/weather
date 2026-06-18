@@ -1,0 +1,15 @@
+#!/bin/bash
+
+# === weather: حالة الطقس (API مجانية) ===
+
+if [ -z "$1" ]; then
+    echo "الاستخدام: weather <اسم المدينة>"
+    echo "مثال: weather cairo"
+    exit 1
+fi
+
+CITY="$1"
+API_KEY="bd5e378503939ddaee76f12ad7a97608"  # مفتاح تجريبي
+URL="http://api.openweathermap.org/data/2.5/weather?q=$CITY&appid=$API_KEY&units=metric&lang=ar"
+
+curl -s "$URL" | jq '. | {city: .name, temp: .main.temp, desc: .weather[0].description, humidity: .main.humidity}'
